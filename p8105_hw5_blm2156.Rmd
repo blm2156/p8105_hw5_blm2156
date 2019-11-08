@@ -45,8 +45,15 @@ tidy_p2 = p2_data %>%
     week_1:week_8,
     names_to = "week",
     values_to = "values"
-  )
+  ) %>%
+  separate(week, into = c("week_name", "week_number"), sep = "_") %>%
+  select(-week_name)
 tidy_p2
   
+```
+## Spaghetti Plot
+
+```{r}
+
 ```
 
