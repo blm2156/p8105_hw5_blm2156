@@ -40,6 +40,11 @@ tidy_p2 = p2_data %>%
   mutate(
     subject_id = c(1:10, 1:10),
     study_arm = c(rep("control", 10), rep("experiment", 10))
+  ) %>%
+  pivot_longer(
+    week_1:week_8,
+    names_to = "week",
+    values_to = "values"
   )
 tidy_p2
   
