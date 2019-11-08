@@ -2,6 +2,7 @@
 title: "p8105_hw5_blm2156"
 output: github_document
 ---
+# Problem 1
 
 ```{r}
 library(tidyverse)
@@ -25,5 +26,10 @@ function1 = function(x) {
 
 iris_final = map_df(iris_with_missing, function1)
 iris_final
+```
+
+# Problem 2
+```{r}
+problem2_files = list.files("./data/")
 ```
 
