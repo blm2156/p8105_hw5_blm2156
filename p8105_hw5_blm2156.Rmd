@@ -1,0 +1,29 @@
+---
+title: "p8105_hw5_blm2156"
+output: github_document
+---
+
+```{r}
+library(tidyverse)
+library(patchwork)
+
+set.seed(10)
+
+iris_with_missing = iris %>% 
+  map_df(~replace(.x, sample(1:150, 20), NA)) %>%
+  mutate(Species = as.character(Species)) %>%
+  janitor::clean_names()
+
+function1 = function(x) {
+  
+  if(is.numeric(x)) {
+    replace_na(x, round(mean(x, na.rm = TRUE)))
+  } else if (is.character(x)) {
+    replace_na(x, "virginica")
+  }
+}
+
+iris_final = map_df(iris_with_missing, function1)
+iris_final
+```
+
