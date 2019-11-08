@@ -30,6 +30,11 @@ iris_final
 
 # Problem 2
 ```{r}
-problem2_files = list.files("./data/")
+problem2_files = list.files("./data/", full.names = TRUE)
+
+p2_data = problem2_files %>%
+  map(read_csv) %>%
+  reduce(rbind)
+  
 ```
 
