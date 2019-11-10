@@ -1,5 +1,6 @@
 ---
 title: "p8105_hw5_blm2156"
+author: "Britney Mazzetta"
 output: github_document
 ---
 # Problem 1
@@ -34,26 +35,32 @@ problem2_files = list.files("./data/", full.names = TRUE)
 
 p2_data = problem2_files %>%
   map(read_csv) %>%
-  reduce(rbind)
-
-tidy_p2 = p2_data %>%
+  reduce(rbind) %>%
   mutate(
-    subject_id = c(1:10, 1:10),
-    study_arm = c(rep("control", 10), rep("experiment", 10))
-  ) %>%
-  pivot_longer(
-    week_1:week_8,
-    names_to = "week",
-    values_to = "values"
-  ) %>%
-  separate(week, into = c("week_name", "week_number"), sep = "_") %>%
-  select(-week_name)
-tidy_p2
-  
+    subject_id = c(1:20),
+    study_arm = ifelse(subject_id == c(1:10), "control", "experimental")) %>%
+  select(subject_id, study_arm, everything())
+p2_data
 ```
 ## Spaghetti Plot
 
 ```{r}
-
+p2_spaghetti = p2_data %>%
+  pivot_longer(
+  week_1:week_8,
+  names_to = "week", 
+  values_to = "value"
+  ) %>% 
+  separate(week,into = c("week_name", "week_number"), sep = 
+  "_") %>%
+  select(-week_name) %>%
+  ggplot(aes(x = week_number, y = value, color = study_arm, group=subject_id)) + 
+  geom_point() + 
+  geom_line() +
+  labs(
+    title = "Activity over course of day",
+    x = "Week Number",
+    y = "Value")
+p2_spaghetti
 ```
 
