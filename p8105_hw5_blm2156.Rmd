@@ -100,7 +100,7 @@ prob3_final2 =
   unnest(estimate_dfs)
 ```
 
-## Results
+## Plot 1
 ```{r}
 p3_plot1 = prob3_final2 %>%
   mutate(reject = ifelse(p_value <= 0.05, "Not Significant", "Significant")) %>%
@@ -112,11 +112,27 @@ ggplot(aes(x = beta1_new, y = rejection_rate)) +
     geom_point() +
     geom_smooth() + 
     labs(
-    title = "Relationship Between Power and expression(beta[1])",
-    x = "True Value of expression(beta[1])",
+    title = "Relationship Between Power and beta1",
+    x = "True Value of beta1",
     y = "Power")
 p3_plot1
 
 ```
 
+## Plot 2
+
+```{r}
+p3_plot2 = prob3_final2 %>%
+  mutate(reject = ifelse(p_value <= 0.05, "Not Significant", "Significant")) %>%
+  group_by(beta1_new) %>%
+  summarize(mean_b1= mean(beta1_hat)) %>%
+ggplot(aes(x = beta1_new, y =mean_b1)) + 
+    geom_point() +
+    geom_smooth() + 
+    labs(
+    title = "Relationship Between True Value of Beta1 and Mean estimate of Beta 1",
+    x = "True Value of beta1",
+    y = "Mean estimate of Beta1")
+p3_plot2
+```
 
