@@ -3,6 +3,7 @@ title: "p8105_hw5_blm2156"
 author: "Britney Mazzetta"
 output: github_document
 ---
+
 # Problem 1
 
 ```{r}
@@ -30,6 +31,7 @@ iris_final
 ```
 
 # Problem 2
+
 ```{r}
 problem2_files = list.files("./data/", full.names = TRUE)
 
@@ -42,6 +44,7 @@ p2_data = problem2_files %>%
   select(subject_id, study_arm, everything())
 p2_data
 ```
+
 ## Spaghetti Plot
 
 ```{r}
@@ -58,11 +61,14 @@ p2_spaghetti = p2_data %>%
   geom_point() + 
   geom_line() +
   labs(
-    title = "Activity over course of day",
+    title = "Observations on each subject over time",
     x = "Week Number",
     y = "Value")
 p2_spaghetti
 ```
+
+The values observed in the experimental arm are higher than the values observed in the control arm. As weeks increase, the values tend to increase in the experimental arm, while the values in the control arm appear to remain relatively constant. With time, the difference between the experimental and control group appears to increase. 
+
 # Problem 3
 
 ```{r}
@@ -92,7 +98,7 @@ prob3_final = rerun(10000, sim_regression(beta1 = 0)) %>%
 
 ```{r}
 prob3_final2 = 
-  tibble(beta1_new = c(1,2,3,4,5,6)) %>%
+  tibble(beta1_new = c(0,1,2,3,4,5,6)) %>%
   mutate(
     output_lists = map(.x = beta1_new, ~rerun(10000, sim_regression(beta1 = .x))),
     estimate_dfs = map(output_lists, bind_rows)) %>%
@@ -103,32 +109,34 @@ prob3_final2 =
 ## Plot 1
 ```{r}
 p3_plot1 = prob3_final2 %>%
-  mutate(reject = ifelse(p_value <= 0.05, "Not Significant", "Significant")) %>%
+  mutate(reject = ifelse(p_value < 0.05, "Significant", "Not Significant")) %>%
   group_by(beta1_new, reject) %>%
   summarize(rejection_count = n()) %>%
-  filter(reject == "Not Significant") %>%
+  filter(reject == "Significant") %>%
   mutate(rejection_rate = rejection_count/100) %>%
 ggplot(aes(x = beta1_new, y = rejection_rate)) + 
     geom_point() +
-    geom_smooth() + 
+    geom_line() + 
     labs(
-    title = "Relationship Between Power and beta1",
-    x = "True Value of beta1",
+    title = "Relationship Between Power and Effect Size",
+    x = "Effect Size",
     y = "Power")
 p3_plot1
 
 ```
 
+Based on the plot, as the effect size increases (true value of Beta 1), power tends to increase before level off and slowing its increase around power = 80+.
+
 ## Plot 2
 
 ```{r}
 p3_plot2 = prob3_final2 %>%
-  mutate(reject = ifelse(p_value <= 0.05, "Not Significant", "Significant")) %>%
+  mutate(reject = ifelse(p_value < 0.05, "Significant", "Not Significant")) %>%
   group_by(beta1_new) %>%
   summarize(mean_b1= mean(beta1_hat)) %>%
 ggplot(aes(x = beta1_new, y =mean_b1)) + 
     geom_point() +
-    geom_smooth() + 
+    geom_line() + 
     labs(
     title = "Relationship Between True Value of Beta1 and Mean estimate of Beta 1",
     x = "True Value of beta1",
@@ -136,3 +144,22 @@ ggplot(aes(x = beta1_new, y =mean_b1)) +
 p3_plot2
 ```
 
+## Plot 3
+
+```{r}
+p3_plot3 = prob3_final2 %>%
+  mutate(reject = ifelse(p_value < 0.05, "Significant", "Not Significant")) %>%
+  filter(reject == "Significant") %>%
+  group_by(beta1_new) %>%
+  summarize(mean_b1= mean(beta1_hat)) %>%
+ggplot(aes(x = beta1_new, y =mean_b1)) + 
+    geom_point() +
+    geom_line() + 
+    labs(
+    title = "Relationship Between True Value of Beta1 and Mean estimate of Beta 1 only in samples for which the null was rejected",
+    x = "True Value of beta1",
+    y = "Mean estimate of Beta1 only in samples for which the null was rejected")
+p3_plot3
+```
+
+The sample average of Beta1 across tests for which the null is rejected is larger than the true value of Beta1. However, there still appears to be a somewhat linear relationship. Between effect size values of 0 and 4, the mean estimate of Beta1 is particularly overestimated when we are only considering values in which the null was rejected. 
